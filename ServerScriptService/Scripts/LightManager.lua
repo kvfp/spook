@@ -1,4 +1,4 @@
-local U = game:GetService("ReplicatedStorage"):WaitForChild("Modules"):WaitForChild("UtilityModule")
+local U = require(game:GetService("ServerScriptService"):WaitForChild("Modules"):WaitForChild("UtilityModule"))
 local LightModule = require(U:Import("LightModule"))
 
 print("\n\nStarting in")

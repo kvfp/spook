@@ -1,4 +1,4 @@
-local U = require(game:GetService("ReplicatedStorage"):WaitForChild("Modules"):WaitForChild("UtilityModule"))
+local U = require(game:GetService("ServerScriptService"):WaitForChild("Modules"):WaitForChild("UtilityModule"))
 
 local function GetLightParts(Source)
 	local Lights = {}
