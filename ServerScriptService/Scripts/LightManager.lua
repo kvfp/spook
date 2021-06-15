@@ -2,15 +2,19 @@ local U = require(game:GetService("ServerScriptService"):WaitForChild("Modules")
 local LightModule = require(U:Import("LightModule"))
 
 print("\n\nStarting in")
-for i = 1, 5 do
-	print(5-i)
+for i = 1, 15 do
+	print(15-i)
 	wait(1)
 end
 
-print("\nKitchen lights off")
-LightModule:TurnOff("KitchenLights")
+while true do
+	print("\nKitchen lights off")
+	LightModule:TurnOff("KitchenLights")
 
-wait(5)
+	wait(2)
 
-print("\nKitchen lights on")
-LightModule:TurnOn("KitchenLights")
+	print("\nKitchen lights on")
+	LightModule:TurnOn("KitchenLights")
+
+	wait(2)
+end

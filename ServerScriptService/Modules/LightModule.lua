@@ -2,25 +2,29 @@ local U = require(game:GetService("ServerScriptService"):WaitForChild("Modules")
 
 local function GetLightParts(Source)
 	local Lights = {}
-	
+
 	local function GetAll(Inside)
-		if Source:IsA("Folder") then
-			GetAll(Source)
-		elseif Source:IsA("Model") then
-			for _, Descendant in pairs(Source:GetDescendants()) do
+		if Inside:IsA("Folder") then
+			for _, Child in pairs(Inside:GetChildren()) do
+				GetAll(Child)
+			end
+		elseif Inside:IsA("Model") or Inside.Parent.Name == "Main" or Inside.Name == "MainLight" then
+			for _, Descendant in pairs(Inside:GetDescendants()) do
 				table.insert(Lights, Descendant)
 			end
-			if Source:FindFirstChild("Neon") == nil then
-				print("\n\n>>>",Source.Name,"might not be a light!","<<<\n\n")
+			if Inside:FindFirstChild("Neon") == nil then
+				print("\n\n>>>",Inside.Name,"might not be a light!","<<<\n\n")
 			end
 		end
 	end
-	
+
+	GetAll(Source)
+
 	return Lights
 end
 
 local function TurnOn(Target)
-	local LightParts = GetLightParts()
+	local LightParts = GetLightParts(Target)
 	for _, Part in pairs(LightParts) do
 		if Part:FindFirstChild("WasANeonPart") then
 			Part.Material = Enum.Material.Neon
@@ -31,7 +35,8 @@ local function TurnOn(Target)
 end
 
 local function TurnOff(Target)
-	local LightParts = GetLightParts()
+	local LightParts = GetLightParts(Target)
+	print("\nLightParts:",#LightParts,"\n")
 	for _, Part in pairs(LightParts) do
 		if Part:IsA("Part") or Part:IsA("MeshPart") then
 			if Part.Material == Enum.Material.Neon then
@@ -39,8 +44,8 @@ local function TurnOff(Target)
 					local WasANeonPart = Instance.new("BoolValue")
 					WasANeonPart.Name = "WasANeonPart"
 					WasANeonPart.Parent = Part
-					Part.Material = Enum.Material.Plastic
 				end
+				Part.Material = Enum.Material.Plastic
 			end
 		elseif Part:IsA("SpotLight") or Part:IsA("SurfaceLight") or Part:IsA("PointLight") then
 			if Part:FindFirstChild("OriginalBrightness") == nil then
@@ -49,17 +54,21 @@ local function TurnOff(Target)
 				OriginalBrightness.Parent = Part
 				OriginalBrightness.Value = Part.Brightness
 			end
-			Part.Brightness = 0
+			if Part.Parent.Name == "MainLight" then
+				Part.Brightness = 0.1
+			else
+				Part.Brightness = 0
+			end
 		end
 	end
 end
 
 local function Flicker(Target)
-	
+
 end
 
 local function Restore(Target)
-	
+
 end
 
 local function GetSource(SourceName)
@@ -90,7 +99,7 @@ function LightModule:TurnOff(SourceName)
 	local function Main()
 		local Source = GetSource(SourceName)
 		if Source then
-			TurnOff()(Source)
+			TurnOff(Source)
 		end
 	end
 	local Cor = coroutine.wrap(Main)

@@ -36,4 +36,4 @@ local function PlaceInFolder(Location, FolderName)
     print("-------------------------------------------------------")
 end
 
-PlaceInFolder(workspace.Lights.LivingRoom, "Ceiling")
+PlaceInFolder(workspace.Lights.Kitchen, "Cabinet")
