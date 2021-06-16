@@ -44,11 +44,15 @@ end
 
 local function ReturnParts(Target)
 	local LightParts = GetLightParts(Target)
-	local Part = LightParts:FindFirstChildOfClass("Part")
-	if Part == nil then
-		Part = LightParts:FindFirstChildOfClass("MeshPart")
+	if LightParts then
+		print("LightParts",LightParts)
+		for _, Part in pairs(LightParts) do
+			if Part:IsA("Part") or Part:IsA("MeshPart") then
+				return {One = Part, Many = LightParts}
+			end
+		end
 	end
-	return {One = Part, Many = LightParts}
+	return nil
 end
 
 local function TurnOn(Target)
@@ -140,36 +144,56 @@ function LightModule:TurnOff(SourceName, Overrides)
 end
 
 function LightModule:Flicker(SourceName, Overrides)
-	
+
 	local function Main()
 
 		local Source = GetSource(SourceName)
-		
+
 		if Source then
 			
+			local OriginalVolume
+			local PlayingAudio
 			local ReturnedParts = ReturnParts(Source)
-			if ReturnedParts.One then
-				print("Returned",ReturnedParts.One)
-			else
-				print("Failed return")
+			if ReturnedParts then
+				if ReturnedParts.One then
+					print("Returned",ReturnedParts.One)
+					PlayingAudio = Audio["Flicker"]:Clone()
+					PlayingAudio.Parent = ReturnedParts.One
+					PlayingAudio.TimePosition = math.random()*30
+					PlayingAudio:Play()
+					OriginalVolume = PlayingAudio.Volume
+					PlayingAudio.Volume = 0
+				else
+					print("Failed return")
+				end
 			end
+
 
 			print("\n\nFlicker start")
-			
+
 			for i = 1, math.random(1, 15) do
 				TurnOff(Source)
+				PlayingAudio.Volume = OriginalVolume
 				wait(math.random(5,40)/100)
-				TurnOn(Source)
-				wait(math.random(5,40)/100)
-			end
+				PlayingAudio.Volume = 0
 
+				TurnOn(Source)
+				PlayingAudio.Volume = OriginalVolume
+				wait(math.random(5,40)/100)
+				PlayingAudio.Volume = 0
+			end
+			
+			if PlayingAudio then
+				PlayingAudio:Destroy()
+			end
 			print("It was still:",ReturnedParts.One)
 		end
 		print("Flicker end\n\n")
-		
+
 	end
-	local Cor = coroutine.wrap(Main)
-	Cor()
+	--local Cor = coroutine.wrap(Main)
+	--Cor()
+	Main()
 end
 
 return LightModule
