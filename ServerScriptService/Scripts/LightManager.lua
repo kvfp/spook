@@ -9,12 +9,9 @@ end
 
 while true do
 	print("\nKitchen lights off")
-	LightModule:TurnOff("KitchenLights")
-
-	wait(2)
-
+	LightModule:Flicker("KitchenLights")
+	wait(10)
 	print("\nKitchen lights on")
-	LightModule:TurnOn("KitchenLights")
-
-	wait(2)
+	LightModule:Flicker("KitchenLights")
+	wait(10)
 end

@@ -25,9 +25,9 @@ local function GetLightParts(Source, Overrides)
 					end
 				end
 			end
-			if Inside:FindFirstChild("Neon") == nil then
-				print("\n\n>>>",Inside.Name,"might not be a light!","<<<\n\n")
-			end
+			-- if Inside:FindFirstChild("Neon") == nil then
+			-- 	print("\n\n>>>",Inside.Name,"might not be a light!","<<<\n\n")
+			-- end
 		end
 	end
 
@@ -49,7 +49,7 @@ end
 
 local function TurnOff(Target, Overrides)
 	local LightParts = GetLightParts(Target, Overrides)
-	print("\nLightParts:",#LightParts,"\n")
+	-- print("\nLightParts:",#LightParts,"\n")
 	for _, Part in pairs(LightParts) do
 		if Part:IsA("Part") or Part:IsA("MeshPart") then
 			if Part.Material == Enum.Material.Neon then
@@ -69,7 +69,7 @@ local function TurnOff(Target, Overrides)
 				OriginalBrightness.Value = Part.Brightness
 			end
 			if Part.Parent.Name == "MainLight" then
-				print("MainLight found")
+				-- print("MainLight found")
 				Part.Brightness = 0.1
 			else
 				Part.Brightness = 0
@@ -78,23 +78,26 @@ local function TurnOff(Target, Overrides)
 	end
 end
 
-local function Flicker(Target)
-
-end
-
-local function Restore(Target)
-
-end
-
 local function GetSource(SourceName)
 	local Source = SourceName
 	if typeof(SourceName) ~= "Instance" then
 		Source = U:Import(SourceName)
 	end
 	if Source == nil then
-		print("Light source not found")
+		-- print("Light source not found")
 	end
 	return Source
+end
+
+local function Restore(SourceName)
+	local function Main()
+		local Source = GetSource(SourceName)
+		if Source then
+			TurnOn(Source)
+		end
+	end
+	local Cor = coroutine.wrap(Main)
+	Cor()
 end
 
 local LightModule = {}
@@ -116,6 +119,24 @@ function LightModule:TurnOff(SourceName, Overrides)
 		if Source then
 			TurnOff(Source, Overrides)
 		end
+	end
+	local Cor = coroutine.wrap(Main)
+	Cor()
+end
+
+function LightModule:Flicker(SourceName, Overrides)
+	local function Main()
+		print("Flicker start")
+		local Source = GetSource(SourceName)
+		if Source then
+			for i = 1, math.random(1, 15) do
+				TurnOff(Source)
+				wait(math.random(5,40)/100)
+				TurnOn(Source)
+				wait(math.random(5,40)/100)
+			end
+		end
+		print("Flicker end")
 	end
 	local Cor = coroutine.wrap(Main)
 	Cor()
