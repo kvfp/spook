@@ -1,4 +1,10 @@
 local U = require(game:GetService("ServerScriptService"):WaitForChild("Modules"):WaitForChild("UtilityModule"))
+local AudioFolder = U:Import("AudioFolder")
+
+local Audio = {
+	["Flicker"] = U:WFC(AudioFolder, {"Flicker"})
+}
+
 local DimmedNeonColor = Color3.fromRGB(161, 133, 115)
 
 local function GetLightParts(Source, Overrides)
@@ -34,6 +40,15 @@ local function GetLightParts(Source, Overrides)
 	GetAll(Source)
 
 	return Lights
+end
+
+local function ReturnParts(Target)
+	local LightParts = GetLightParts(Target)
+	local Part = LightParts:FindFirstChildOfClass("Part")
+	if Part == nil then
+		Part = LightParts:FindFirstChildOfClass("MeshPart")
+	end
+	return {One = Part, Many = LightParts}
 end
 
 local function TurnOn(Target)
@@ -125,18 +140,33 @@ function LightModule:TurnOff(SourceName, Overrides)
 end
 
 function LightModule:Flicker(SourceName, Overrides)
+	
 	local function Main()
-		print("Flicker start")
+
 		local Source = GetSource(SourceName)
+		
 		if Source then
+			
+			local ReturnedParts = ReturnParts(Source)
+			if ReturnedParts.One then
+				print("Returned",ReturnedParts.One)
+			else
+				print("Failed return")
+			end
+
+			print("\n\nFlicker start")
+			
 			for i = 1, math.random(1, 15) do
 				TurnOff(Source)
 				wait(math.random(5,40)/100)
 				TurnOn(Source)
 				wait(math.random(5,40)/100)
 			end
+
+			print("It was still:",ReturnedParts.One)
 		end
-		print("Flicker end")
+		print("Flicker end\n\n")
+		
 	end
 	local Cor = coroutine.wrap(Main)
 	Cor()

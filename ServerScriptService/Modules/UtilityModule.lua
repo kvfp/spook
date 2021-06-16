@@ -1,4 +1,5 @@
 local RS = game:GetService("ReplicatedStorage")
+local SS = game:GetService("ServerStorage")
 local SSS = game:GetService("ServerScriptService")
 
 local RSModules = RS:WaitForChild("Modules")
@@ -9,6 +10,7 @@ local Database = {
 	["LightModule"] = SSSModules:WaitForChild("LightModule"),
 	["Lights"] = workspace:WaitForChild("Lights"),
 	["KitchenLights"] = workspace:WaitForChild("Lights"):WaitForChild("Kitchen"),
+	["AudioFolder"] = SS:WaitForChild("Audio"),
 }
 
 local u = {}
