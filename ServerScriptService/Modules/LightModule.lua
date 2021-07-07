@@ -38,12 +38,16 @@ local function GetLightParts(Source, Overrides)
 	end
 
 	GetAll(Source)
+	print("Got lights:",#Lights)
 
 	return Lights
 end
 
 local function ReturnParts(Target)
-	local LightParts = GetLightParts(Target)
+	local LightParts = Target
+	if typeof(Target) ~= "table" then
+		LightParts = GetLightParts(Target)
+	end
 	if LightParts then
 		print("LightParts",LightParts)
 		for _, Part in pairs(LightParts) do
@@ -56,7 +60,10 @@ local function ReturnParts(Target)
 end
 
 local function TurnOn(Target)
-	local LightParts = GetLightParts(Target)
+	local LightParts = Target
+	if typeof(Target) ~= "table" then
+		LightParts = GetLightParts(Target)
+	end
 	for _, Part in pairs(LightParts) do
 		if Part:FindFirstChild("OriginalColor") then
 			Part.Color = DimmedNeonColor
@@ -67,7 +74,10 @@ local function TurnOn(Target)
 end
 
 local function TurnOff(Target, Overrides)
-	local LightParts = GetLightParts(Target, Overrides)
+	local LightParts = Target
+	if typeof(Target) ~= "table" then
+		LightParts = GetLightParts(Target)
+	end
 	-- print("\nLightParts:",#LightParts,"\n")
 	for _, Part in pairs(LightParts) do
 		if Part:IsA("Part") or Part:IsA("MeshPart") then
@@ -99,7 +109,7 @@ end
 
 local function GetSource(SourceName)
 	local Source = SourceName
-	if typeof(SourceName) ~= "Instance" then
+	if typeof(SourceName) ~= "Instance" and typeof(SourceName) ~= "table" then
 		Source = U:Import(SourceName)
 	end
 	if Source == nil then
@@ -120,6 +130,16 @@ local function Restore(SourceName)
 end
 
 local LightModule = {}
+
+function LightModule:GetLightParts(SourceName)
+	local LightParts = nil
+	local function Main()
+		LightParts = GetLightParts(SourceName)
+	end
+	local Cor = coroutine.wrap(Main)
+	Cor()
+	return LightParts
+end
 
 function LightModule:TurnOn(SourceName)
 	local function Main()
@@ -150,7 +170,7 @@ function LightModule:Flicker(SourceName, Overrides)
 		local Source = GetSource(SourceName)
 
 		if Source then
-			
+
 			local OriginalVolume
 			local PlayingAudio
 			local ReturnedParts = ReturnParts(Source)
@@ -166,6 +186,14 @@ function LightModule:Flicker(SourceName, Overrides)
 				else
 					print("Failed return")
 				end
+			else
+				ReturnedParts = { One = Source[1] }
+				PlayingAudio = Audio["Flicker"]:Clone()
+				PlayingAudio.Parent = ReturnedParts.One
+				PlayingAudio.TimePosition = math.random()*30
+				PlayingAudio:Play()
+				OriginalVolume = PlayingAudio.Volume
+				PlayingAudio.Volume = 0
 			end
 
 
@@ -182,7 +210,7 @@ function LightModule:Flicker(SourceName, Overrides)
 				wait(math.random(5,40)/100)
 				PlayingAudio.Volume = 0
 			end
-			
+
 			if PlayingAudio then
 				PlayingAudio:Destroy()
 			end
