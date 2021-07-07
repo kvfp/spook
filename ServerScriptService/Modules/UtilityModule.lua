@@ -11,6 +11,7 @@ local Database = {
 	["Lights"] = workspace:WaitForChild("Lights"),
 	["KitchenLights"] = workspace:WaitForChild("Lights"):WaitForChild("Kitchen"),
 	["AudioFolder"] = SS:WaitForChild("Audio"),
+	["LightInterference"] = SSSModules:WaitForChild("LightInterference"),
 }
 
 local u = {}
@@ -48,7 +49,11 @@ function u:Import(Name)
 		return Database[Name]
 	else
 		print(Name,"does not exist")
-		return nil
+		if typeof(Name) == "Instance" then
+			return Name
+		else
+			return nil
+		end
 	end
 end
 
